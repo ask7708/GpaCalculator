@@ -5,82 +5,111 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.*;
 
 public class GpaView extends JFrame {
 
-	
 	/**
 	 * The array of letter grades
 	 */
-	public final String[] LETGRADES = {"Choose Grade", "A",  "A-", "B+", "B",
-			"B-", "C+", "C",  "D",  "D-", "E",  "F"};
-	
+	public final String[] LETGRADES = { "None", "A", "A-", "B+", "B", "B-",
+			"C+", "C", "D", "D-", "F" };
+
+	private int calculatedGPA = 0;
+
+	JTextField outputGPA = new JTextField("Calculated GPA");
+
 	/**
 	 * An arraylist for storing user entered courses
 	 */
 	ArrayList<String> courseList = new ArrayList<String>();
-	
-	
+
 	/**
 	 * 
-	 * Used to set up the GUI, adds all the different 
-	 * components to the frame.
+	 * Used to set up the GUI, adds all the different components to the frame.
 	 * 
 	 */
-	public GpaView(){
-		
-		
-		add(gradeList(), BorderLayout.CENTER );
-		add(courseList(), BorderLayout.WEST );
+	public GpaView() {
+
+		add(gradeList(), BorderLayout.CENTER);
+		add(courseList(), BorderLayout.WEST);
 		setSize(250, 400);
 		setResizable(false);
 		setTitle("GPA Calculator");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 	}
-	
+
 	/**
 	 * Create a column of grades that users may choose from
 	 * 
 	 * @return columns of grade drop down
 	 */
 	@SuppressWarnings("unchecked")
-	public Component gradeList(){
-		
+	public Component gradeList() {
+
 		JPanel gradePanel = new JPanel();
-		GridLayout gradeLayout = new GridLayout(6,0);
+		JPanel calcPanel = new JPanel();
+		JPanel combinedPanel = new JPanel();
+		JPanel outputPanel = new JPanel();
+
+		GridLayout combinedLayout = new GridLayout(1, 2);
+		GridLayout gradeLayout = new GridLayout(6, 0);
+
 		JComboBox row1 = new JComboBox(LETGRADES);
 		JComboBox row2 = new JComboBox(LETGRADES);
 		JComboBox row3 = new JComboBox(LETGRADES);
 		JComboBox row4 = new JComboBox(LETGRADES);
 		JComboBox row5 = new JComboBox(LETGRADES);
 		JComboBox row6 = new JComboBox(LETGRADES);
-		
-		
+
+		JButton calcButton = new JButton("Calculate");
+
+		/*
+		 * Create a frame with two columns one for choosing grades and the other
+		 * for output
+		 */
 		gradePanel.setLayout(gradeLayout);
+		combinedPanel.setLayout(combinedLayout);
+
+		outputPanel.setLayout(new GridLayout(2, 0));
+		outputPanel.add(calcButton);
+		outputPanel.add(outputGPA);
+
+		calcPanel.setLayout(new BorderLayout());
+		calcPanel.add(outputPanel, BorderLayout.SOUTH);
+
+		combinedPanel.add(gradePanel);
+		combinedPanel.add(calcPanel);
 		gradePanel.add(row1);
 		gradePanel.add(row2);
 		gradePanel.add(row3);
 		gradePanel.add(row4);
 		gradePanel.add(row5);
 		gradePanel.add(row6);
-		
-		
+
+		calcButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputGPA.setText(Integer.toString(calculatedGPA));
+			}
+		});
+
 		gradePanel.setVisible(true);
-		
-		return gradePanel;
-		
+
+		return combinedPanel;
+
 	}
-	
-	public Component courseList(){
-		
+
+	public Component courseList() {
+
 		JPanel coursePanel = new JPanel();
-		GridLayout courseLayout = new GridLayout(6,0);
+		GridLayout courseLayout = new GridLayout(6, 0);
 		Font boldFont = new Font("SansSerif", Font.BOLD, 12);
-		
+
 		JTextField course1 = new JTextField("Course 1");
 		course1.setEditable(false);
 		course1.setBackground(Color.WHITE);
@@ -104,9 +133,8 @@ public class GpaView extends JFrame {
 		JTextField course6 = new JTextField("Course 6");
 		course6.setEditable(false);
 		course6.setBackground(Color.WHITE);
-		course6.setFont(boldFont);		
-		
-		
+		course6.setFont(boldFont);
+
 		coursePanel.setLayout(courseLayout);
 		coursePanel.add(course1);
 		coursePanel.add(course2);
@@ -115,14 +143,12 @@ public class GpaView extends JFrame {
 		coursePanel.add(course5);
 		coursePanel.add(course6);
 
-		
-		
 		coursePanel.setVisible(true);
-		
+
 		return coursePanel;
-		
+
 	}
-	
+
 	/**
 	 * Displays the GPA GUI
 	 * 
