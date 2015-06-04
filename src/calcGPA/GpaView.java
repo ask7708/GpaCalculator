@@ -3,7 +3,6 @@ package calcGPA;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -12,13 +11,26 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
+@SuppressWarnings("serial")
 public class GpaView extends JFrame {
+
+	/**
+	 * 
+	 * Exception to be used if credit hours are bigger than 10
+	 * 
+	 * @return
+	 */
+	CustomException creditException = new CustomException(
+			"Max credit hours is 10, please choose a smaller number.");
 
 	/**
 	 * The array of letter grades
 	 */
 	public final String[] LETGRADES = { "None", "A", "A-", "B+", "B", "B-",
 			"C+", "C", "D", "D-", "F" };
+
+	public final double[] NUMGRADES = { 0.0, 4.00, 3.67, 3.33, 3.00, 2.67,
+			2.33, 2.00, 1.67, 1.00, 0.00 };
 
 	/**
 	 * 
@@ -36,21 +48,20 @@ public class GpaView extends JFrame {
 	 * 
 	 * Drop down boxes for the user to select from for grades
 	 */
-	JComboBox row1 = new JComboBox(LETGRADES);
-	JComboBox row2 = new JComboBox(LETGRADES);
-	JComboBox row3 = new JComboBox(LETGRADES);
-	JComboBox row4 = new JComboBox(LETGRADES);
-	JComboBox row5 = new JComboBox(LETGRADES);
-	JComboBox row6 = new JComboBox(LETGRADES);
-	
+	JComboBox<String> chooseGrade1 = new JComboBox<String>(LETGRADES);
+	JComboBox<String> chooseGrade2 = new JComboBox<String>(LETGRADES);
+	JComboBox<String> chooseGrade3 = new JComboBox<String>(LETGRADES);
+	JComboBox<String> chooseGrade4 = new JComboBox<String>(LETGRADES);
+	JComboBox<String> chooseGrade5 = new JComboBox<String>(LETGRADES);
+	JComboBox<String> chooseGrade6 = new JComboBox<String>(LETGRADES);
+
 	JTextArea credit1 = new JTextArea("0");
 	JTextArea credit2 = new JTextArea("0");
 	JTextArea credit3 = new JTextArea("0");
 	JTextArea credit4 = new JTextArea("0");
 	JTextArea credit5 = new JTextArea("0");
 	JTextArea credit6 = new JTextArea("0");
-	
-	
+
 	/**
 	 * An arraylist for storing user entered courses
 	 */
@@ -77,15 +88,12 @@ public class GpaView extends JFrame {
 	 * 
 	 * @return columns of grade drop down
 	 */
-	@SuppressWarnings("unchecked")
 	public Component gradeList() {
 
 		JPanel gradePanel = new JPanel();
 		JPanel calcPanel = new JPanel();
 		JPanel combinedPanel = new JPanel();
 		JPanel outputPanel = new JPanel();
-
-		Font labelFont = new Font("SansSerif", Font.BOLD, 12);
 
 		GridLayout combinedLayout = new GridLayout(1, 2);
 		GridLayout gradeLayout = new GridLayout(7, 0);
@@ -95,7 +103,6 @@ public class GpaView extends JFrame {
 		gradeLabel.setBackground(Color.BLACK);
 		gradeLabel.setForeground(Color.WHITE);
 		gradeLabel.setBorder(BorderFactory.createLineBorder(Color.white));
-
 
 		JButton calcButton = new JButton("Calculate");
 
@@ -114,18 +121,24 @@ public class GpaView extends JFrame {
 		calcPanel.add(outputPanel, BorderLayout.SOUTH);
 
 		gradePanel.add(gradeLabel);
-		gradePanel.add(row1);
-		gradePanel.add(row2);
-		gradePanel.add(row3);
-		gradePanel.add(row4);
-		gradePanel.add(row5);
-		gradePanel.add(row6);
+		gradePanel.add(chooseGrade1);
+		gradePanel.add(chooseGrade2);
+		gradePanel.add(chooseGrade3);
+		gradePanel.add(chooseGrade4);
+		gradePanel.add(chooseGrade5);
+		gradePanel.add(chooseGrade6);
 
 		combinedPanel.add(gradePanel);
 		combinedPanel.add(calcPanel);
 
 		calcButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					calculate();
+				} catch (CustomException e1) {
+
+					e1.printStackTrace();
+				}
 				outputGPA.setText(Double.toString(calculatedGPA));
 			}
 		});
@@ -146,8 +159,7 @@ public class GpaView extends JFrame {
 		JPanel coursePanel = new JPanel();
 		JPanel creditPanel = new JPanel();
 		JPanel combinedccPanel = new JPanel();
-		
-		
+
 		GridLayout courseLayout = new GridLayout(7, 0);
 		Font boldFont = new Font("SansSerif", Font.BOLD, 12);
 
@@ -156,7 +168,7 @@ public class GpaView extends JFrame {
 		courseLabel.setBackground(Color.BLACK);
 		courseLabel.setForeground(Color.white);
 		courseLabel.setBorder(BorderFactory.createLineBorder(Color.white));
-		
+
 		JLabel creditLabel = new JLabel("Credit Hrs");
 		creditLabel.setOpaque(true);
 		creditLabel.setBackground(Color.BLACK);
@@ -196,7 +208,7 @@ public class GpaView extends JFrame {
 		course6.setBorder(BorderFactory.createLineBorder(Color.black));
 
 		// sets up the credits column
-	
+
 		credit1.setBackground(Color.WHITE);
 		credit1.setFont(boldFont);
 		credit1.setLineWrap(true);
@@ -226,9 +238,8 @@ public class GpaView extends JFrame {
 		credit6.setFont(boldFont);
 		credit6.setLineWrap(true);
 		credit6.setBorder(BorderFactory.createLineBorder(Color.black));
-		
-		
-		//Sets up the course column with each course selection
+
+		// Sets up the course column with each course selection
 		coursePanel.setLayout(courseLayout);
 		coursePanel.add(courseLabel);
 		coursePanel.add(course1);
@@ -239,7 +250,7 @@ public class GpaView extends JFrame {
 		coursePanel.add(course6);
 		coursePanel.setVisible(true);
 
-		//Sets up credit hours column
+		// Sets up credit hours column
 		creditPanel.setLayout(courseLayout);
 		creditPanel.add(creditLabel);
 		creditPanel.add(credit1);
@@ -250,14 +261,27 @@ public class GpaView extends JFrame {
 		creditPanel.add(credit6);
 		creditPanel.setVisible(true);
 
-		
-		
-		combinedccPanel.setLayout(new GridLayout(0,2));
+		combinedccPanel.setLayout(new GridLayout(0, 2));
 		combinedccPanel.add(coursePanel);
 		combinedccPanel.add(creditPanel);
-		
+
 		return combinedccPanel;
 
+	}
+
+	public void calculate() throws CustomException {
+
+		if (credit1.getText().length() > 1 || credit2.getText().length() > 1
+				|| credit3.getText().length() > 1
+				|| credit4.getText().length() > 1
+				|| credit5.getText().length() > 1
+				|| credit6.getText().length() > 1) {
+
+			throw creditException;
+		} else {
+
+			calculatedGPA = 3.0;
+		}
 	}
 
 	/**
