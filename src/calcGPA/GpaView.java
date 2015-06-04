@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -14,6 +15,13 @@ import javax.swing.*;
 @SuppressWarnings("serial")
 public class GpaView extends JFrame {
 
+	
+	/**
+	 * 
+	 * Sets up formatting for output of GPA
+	 */
+	DecimalFormat df = new DecimalFormat("0.00"); 
+	
 	/**
 	 * 
 	 * Exception to be used if credit hours are bigger than 10
@@ -134,12 +142,19 @@ public class GpaView extends JFrame {
 		calcButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					calculate();
+					calculateWeightedGpa();
 				} catch (CustomException e1) {
 
-					e1.printStackTrace();
+					System.out
+							.println("Please a numeric integer value less than 10");
+				} catch (NumberFormatException nfe) {
+
+					System.out
+							.println("Please a numeric integer value less than 10");
 				}
-				outputGPA.setText(Double.toString(calculatedGPA));
+
+				
+				outputGPA.setText(df.format((calculatedGPA)));
 			}
 		});
 
@@ -269,7 +284,10 @@ public class GpaView extends JFrame {
 
 	}
 
-	public void calculate() throws CustomException {
+	public void calculateWeightedGpa() throws CustomException {
+
+		int totalCredits = 0;
+		double totalGradePoints = 0.0;
 
 		if (credit1.getText().length() > 1 || credit2.getText().length() > 1
 				|| credit3.getText().length() > 1
@@ -280,8 +298,37 @@ public class GpaView extends JFrame {
 			throw creditException;
 		} else {
 
-			calculatedGPA = 3.0;
+			totalCredits = Integer.parseInt(credit1.getText())
+					+ Integer.parseInt(credit2.getText())
+					+ Integer.parseInt(credit3.getText())
+					+ Integer.parseInt(credit4.getText())
+					+ Integer.parseInt(credit5.getText())
+					+ Integer.parseInt(credit6.getText());
+
+			totalGradePoints = calculateTotalGradePoints();
+
+			calculatedGPA = totalGradePoints / totalCredits;
 		}
+	}
+
+	public double calculateTotalGradePoints() {
+
+		double totalGradePts = 0.0;
+
+		totalGradePts = ((Integer.parseInt(credit1.getText())) * NUMGRADES[chooseGrade1
+				.getSelectedIndex()])
+				+ ((Integer.parseInt(credit2.getText())) * NUMGRADES[chooseGrade2
+						.getSelectedIndex()])
+				+ ((Integer.parseInt(credit3.getText())) * NUMGRADES[chooseGrade3
+						.getSelectedIndex()])
+				+ ((Integer.parseInt(credit4.getText())) * NUMGRADES[chooseGrade4
+						.getSelectedIndex()])
+				+ ((Integer.parseInt(credit5.getText())) * NUMGRADES[chooseGrade5
+						.getSelectedIndex()])
+				+ ((Integer.parseInt(credit6.getText())) * NUMGRADES[chooseGrade6
+						.getSelectedIndex()]);
+
+		return totalGradePts;
 	}
 
 	/**
